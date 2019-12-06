@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Weather</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+	input{
+		margin: 10px 0px;
+		padding: 5px;
+	}
+	#forecast{
+		/*This div should not appear until the weather is returned.*/
+		display:none;
+	}
+	#forecast div{
+		width: 25vw;
+		border: 8px solid blue;
+		margin: 0 auto;
+		background: black;
+	}
+	img{
+		width:100%;
+	}
+</style>
+<script>
+    function gettingJSON(){
+    	console.log("Hi")
+			var location = $("#location").val();
+			$("#forecast").css("display", "block");
+    	// Use the OpenWeather API to return:
+    	//  the current temperature
+    	//  the high temperature for the day
+    	//  the low temperature for the day
+    	//  the icon for the current weather.
+			if (location.length == 0 ){
+				var cityname = "Ann+Arbor";
+			}
+			else{
+				var cityname = location;
+			}
+
+			if($('#celcius').is(':checked')) {
+				var unit = "metric";
+			}
+
+			else{
+				var unit = "imperial";
+			}
+
+
+    	// You will need to update this query with the city, weather format (Celsius or Fahrenheit) and your OpenWeatherMap ID
+
+    	// Right now I have it set to Chicago.  The default should be Ann Abor/Fahreheit.
+		let query = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&APPID=" +"1bfef36c1516af22ca19795a5b5573c3" + "&units=" + unit ;
+        console.log("Query is :" + query)
+
+        $.getJSON(query,function(json){
+					console.log(json);
+					var iconurl = "http://openweathermap.org/img/wn/";
+					var iconcode = json["weather"]["0"].icon;
+					var desc = json["weather"]["0"].description;
+					var title = json["weather"]["0"].main;
+					$("#loc").text(json.name);
+					$("#temp").text(json["main"].temp);
+					$("#high").text(json["main"].temp_max);
+					$("#low").text(json["main"].temp_min);
+					$("#tempImg").prop("src", iconurl + iconcode + "@2x.png");
+					$("#tempImg").prop("alt", desc);
+					$("#tempImg").prop("title", title);
+					// console.log(desc)
+					// console.log(title);
+					// console.log(iconcode);
+    })
+    }
+
+		// Resources used: https://stackoverflow.com/questions/9138959/parsing-json-dictionary-in-javascript-to-iterate-through-keys/9139126
+		// https://stackoverflow.com/questions/2272507/find-out-whether-radio-button-is-checked-with-jquery
+		// https://api.jquery.com/length/
+    </script>
+</head>
+<body>
+	<!-- DO NOT CHANGE ANY CODE IN THE BODY OF THIS FILE. -->
+	<label for ="location">City:</label><input type = "text" id = "location"><br>
+	<input type = "radio" name = "temp" value = "imperial" id = "fahrenheit"> <label for = "fahrenheit">Fahrenheit</label><br>
+	<input type = "radio" name = "temp" value = "metric" id = "celcius"> <label for = "celcius">Celcius</label><br>
+
+	<button id = "getIt" onclick = " gettingJSON()">Get Weather</button>
+
+
+	<div id = "forecast">
+		<div>
+		<img id = "tempImg" src="" alt = "" title = "">
+		</div>
+		<p>The temperature in <span id = "loc"></span> is currently <span id = "temp"></span>.</p>
+		<p>The high today will be <span id = "high"></span> and the low will be <span id = "low"></span>.</p>
+
+	</div>
+</body>
+</html>
